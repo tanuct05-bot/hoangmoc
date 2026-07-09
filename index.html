@@ -38,7 +38,13 @@
   nav.cats button:hover{background:var(--cream-2)}nav.cats button.on{background:var(--walnut);color:var(--paper)}
   .hero{position:relative;padding:74px 0 54px;overflow:hidden}
   .hero .grain{position:absolute;inset:0;opacity:.5;pointer-events:none}
+  .hero-layout{display:block;position:relative}
+  .hero-layout.has-photo{display:grid;grid-template-columns:1.15fr 0.85fr;gap:48px;align-items:center}
+  @media(max-width:860px){.hero-layout.has-photo{grid-template-columns:1fr}}
   .hero .inner{position:relative;max-width:760px}
+  .hero-photo{border-radius:18px;overflow:hidden;box-shadow:var(--shadow);aspect-ratio:4/5;position:relative}
+  .hero-photo img{width:100%;height:100%;object-fit:cover}
+  @media(max-width:860px){.hero-photo{aspect-ratio:16/9;order:-1}}
   .eyebrow{display:inline-flex;align-items:center;gap:10px;color:var(--moss-2);font-weight:600;font-size:12px;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:18px}
   .eyebrow::before{content:"";width:34px;height:1px;background:var(--gold)}
   .hero h1{font-size:clamp(40px,6.4vw,72px);line-height:1.02;margin:0 0 20px;color:var(--walnut);font-weight:600;letter-spacing:-.5px}
@@ -169,6 +175,10 @@
   .minibtn{border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:8px 12px;font-size:12.5px;font-weight:500;color:var(--walnut-2)}
   .minibtn:hover{border-color:var(--gold);color:var(--gold)}
   .minibtn.del:hover{border-color:#c0392b;color:#c0392b}
+  .aibtn{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(180,131,43,.4);background:rgba(180,131,43,.08);color:var(--gold);border-radius:8px;padding:6px 11px;font-size:12px;font-weight:600;margin:6px 0 0}
+  .aibtn:hover{background:rgba(180,131,43,.16)}
+  .aibtn:disabled{opacity:.55;pointer-events:none}
+  .field-lab{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
   .chk{display:inline-flex;align-items:center;gap:9px;font-size:13.5px;color:var(--walnut-2);cursor:pointer;user-select:none}
   .chk input{width:17px;height:17px;accent-color:var(--gold)}
   .form-actions{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
@@ -194,19 +204,22 @@
       <filter id="wood"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.09" numOctaves="4" seed="7"/>
       <feColorMatrix values="0 0 0 0 0.45  0 0 0 0 0.33  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
       <rect width="100%" height="100%" filter="url(#wood)"/></svg>
-    <div class="wrap inner">
-      <span class="eyebrow">Xưởng mộc thủ công · Hưng Yên</span>
-      <h1>Gỗ thật, tay nghề thật,<br><em>làm ra vật dụng cả đời dùng.</em></h1>
-      <p>Đồ gỗ và nội thất thủ công từ xưởng Hoàng Mộc — mỗi món đều được đóng thật, hoàn thiện thật, không sơn phủ che khuyết điểm gỗ. Xem mẫu tại đây, đặt mua trọn vẹn trên Shopee với đầy đủ chính sách đổi trả và vận chuyển của sàn.</p>
-      <div class="row">
-        <a class="btn-solid" href="#catalogue">Xem bộ sưu tập →</a>
-        <span class="note">Giá và tình trạng hàng cập nhật trực tiếp trên gian hàng Shopee.</span>
+    <div class="wrap hero-layout" id="heroLayout">
+      <div class="inner">
+        <span class="eyebrow" id="hcEyebrow">Xưởng mộc thủ công · Hưng Yên</span>
+        <h1><span id="hcTitle">Gỗ thật, tay nghề thật,</span><br><em id="hcTitleEm">làm ra vật dụng cả đời dùng.</em></h1>
+        <p id="hcDesc">Đồ gỗ và nội thất thủ công từ xưởng Hoàng Mộc — mỗi món đều được đóng thật, hoàn thiện thật, không sơn phủ che khuyết điểm gỗ. Xem mẫu tại đây, đặt mua trọn vẹn trên Shopee với đầy đủ chính sách đổi trả và vận chuyển của sàn.</p>
+        <div class="row">
+          <a class="btn-solid" href="#catalogue">Xem bộ sưu tập →</a>
+          <span class="note" id="hcNote">Giá và tình trạng hàng cập nhật trực tiếp trên gian hàng Shopee.</span>
+        </div>
+        <div class="trust">
+          <div><span class="ic">🌳</span><span id="hcTrust1">100% gỗ tự nhiên, không phủ che khuyết điểm</span></div>
+          <div><span class="ic">🛒</span><span id="hcTrust2">Đặt mua & thanh toán an toàn qua Shopee</span></div>
+          <div><span class="ic">↩</span><span id="hcTrust3">Đổi trả theo chính sách Shopee</span></div>
+        </div>
       </div>
-      <div class="trust">
-        <div><span class="ic">🌳</span>100% gỗ tự nhiên, không phủ che khuyết điểm</div>
-        <div><span class="ic">🛒</span>Đặt mua & thanh toán an toàn qua Shopee</div>
-        <div><span class="ic">↩</span>Đổi trả theo chính sách Shopee</div>
-      </div>
+      <div class="hero-photo hidden" id="heroPhotoWrap"><img id="heroPhotoImg" alt="Hoàng Mộc"></div>
     </div>
   </section>
 
@@ -217,12 +230,12 @@
 
   <footer class="site">
     <div class="wrap cols">
-      <div><div class="mark">Hoàng Mộc</div><p>Nội thất & đồ gỗ thủ công. Mọi sản phẩm được đóng thật, hoàn thiện thật tại xưởng — không sơn phủ che khuyết điểm gỗ.</p></div>
-      <div><h4>Xưởng sản xuất</h4><p>Phương Tòng, Hiệp Cường,<br>Hưng Yên</p><p>Giờ làm việc: 8:00 – 18:00</p></div>
+      <div><div class="mark">Hoàng Mộc</div><p id="hcFooterIntro">Nội thất & đồ gỗ thủ công. Mọi sản phẩm được đóng thật, hoàn thiện thật tại xưởng — không sơn phủ che khuyết điểm gỗ.</p></div>
+      <div><h4>Xưởng sản xuất</h4><p id="hcWorkshopAddr">Phương Tòng, Hiệp Cường,<br>Hưng Yên</p><p><span id="hcWorkshopHours">Giờ làm việc: 8:00 – 18:00</span></p></div>
       <div><h4>Kênh chính thức</h4><a id="footShopee" href="#" target="_blank" rel="noopener">Gian hàng Shopee →</a><a id="footTiktok" href="#" target="_blank" rel="noopener" class="hidden">TikTok · Hoàng Mộc</a><a id="footFacebook" href="#" target="_blank" rel="noopener" class="hidden">Facebook · Hoàng Mộc</a></div>
     </div>
     <div class="wrap base">
-      <span>© <span id="yr"></span> Hoàng Mộc Interior. Website chỉ giới thiệu sản phẩm — mọi giao dịch mua bán, thanh toán, vận chuyển và đổi trả được thực hiện trực tiếp trên Shopee.</span>
+      <span>© <span id="yr"></span> Hoàng Mộc Interior. <span id="hcFooterLegal">Website chỉ giới thiệu sản phẩm — mọi giao dịch mua bán, thanh toán, vận chuyển và đổi trả được thực hiện trực tiếp trên Shopee.</span></span>
       <button class="footer-admin-link" onclick="showAdmin()">Quản trị</button>
     </div>
   </footer>
@@ -255,6 +268,49 @@
   </div></div>
 
   <div class="wrap admin-body">
+    <!-- nội dung trang -->
+    <div class="panel">
+      <h3>Nội dung trang</h3>
+      <p class="lead">Toàn bộ chữ hiển thị công khai trên trang chủ & footer. Có thể tự viết hoặc bấm <b>✨ AI viết</b> để Gemini viết giúp theo giọng thương hiệu, sau đó bạn chỉnh lại cho vừa ý.</p>
+      <div class="form-grid">
+        <div class="field"><label>Nhãn nhỏ trên tiêu đề (eyebrow)</label><input class="input" id="cEyebrow" placeholder="Xưởng mộc thủ công · Hưng Yên"></div>
+        <div class="field"></div>
+        <div class="field">
+          <div class="field-lab"><label>Tiêu đề chính</label><button class="aibtn" onclick="aiWriteTitle(this)">✨ AI viết</button></div>
+          <input class="input" id="cTitle" placeholder="Gỗ thật, tay nghề thật,">
+        </div>
+        <div class="field"><label>Tiêu đề nhấn mạnh <span class="opt">(chữ nghiêng màu vàng)</span></label><input class="input" id="cTitleEm" placeholder="làm ra vật dụng cả đời dùng."></div>
+        <div class="field full-col">
+          <div class="field-lab"><label>Mô tả dưới tiêu đề</label><button class="aibtn" onclick="aiWrite(this,'hero_desc','cDesc')">✨ AI viết</button></div>
+          <textarea class="textarea" id="cDesc" placeholder="Đồ gỗ và nội thất thủ công từ xưởng Hoàng Mộc…"></textarea>
+        </div>
+        <div class="field full-col">
+          <div class="field-lab"><label>Ghi chú cạnh nút "Xem bộ sưu tập"</label><button class="aibtn" onclick="aiWrite(this,'hero_note','cNote')">✨ AI viết</button></div>
+          <input class="input" id="cNote" placeholder="Giá và tình trạng hàng cập nhật trực tiếp trên gian hàng Shopee.">
+        </div>
+        <div class="field full-col">
+          <div class="field-lab"><label>3 badge tin cậy dưới hero</label><button class="aibtn" onclick="aiWriteTrust(this)">✨ AI viết cả 3</button></div>
+        </div>
+        <div class="field"><label>🌳 Badge 1 — chất liệu</label><input class="input" id="cTrust1" placeholder="100% gỗ tự nhiên, không phủ che khuyết điểm"></div>
+        <div class="field"><label>🛒 Badge 2 — mua hàng</label><input class="input" id="cTrust2" placeholder="Đặt mua & thanh toán an toàn qua Shopee"></div>
+        <div class="field full-col"><label>↩ Badge 3 — đổi trả</label><input class="input" id="cTrust3" placeholder="Đổi trả theo chính sách Shopee"></div>
+        <div class="field full-col">
+          <label>Ảnh hero <span class="opt">(tùy chọn — có ảnh sẽ hiện cạnh tiêu đề thay vân gỗ)</span></label>
+          <div class="drop" id="heroDrop"><div class="ic">🖼</div><b>Kéo & thả ảnh vào đây</b><small>hoặc <span class="link">chọn từ máy</span> · ảnh xưởng/sản phẩm thật, tỉ lệ dọc đẹp nhất</small></div>
+          <input type="file" id="heroFileInput" accept="image/*" class="hidden">
+          <div class="thumbrow" id="heroThumb"></div>
+        </div>
+        <div class="field full-col">
+          <div class="field-lab"><label>Giới thiệu ở footer</label><button class="aibtn" onclick="aiWrite(this,'footer_intro','cFooterIntro')">✨ AI viết</button></div>
+          <textarea class="textarea" id="cFooterIntro" placeholder="Nội thất & đồ gỗ thủ công…"></textarea>
+        </div>
+        <div class="field"><label>Địa chỉ xưởng <span class="opt">(xuống dòng = Enter)</span></label><textarea class="textarea" id="cWorkshopAddr" style="min-height:70px" placeholder="Phương Tòng, Hiệp Cường,&#10;Hưng Yên"></textarea></div>
+        <div class="field"><label>Giờ làm việc</label><input class="input" id="cWorkshopHours" placeholder="Giờ làm việc: 8:00 – 18:00"></div>
+        <div class="field full-col"><label>Dòng pháp lý cuối footer</label><input class="input" id="cFooterLegal" placeholder="Website chỉ giới thiệu sản phẩm — mọi giao dịch…"></div>
+      </div>
+      <div class="form-actions"><button class="abtn primary" onclick="saveContent()">Lưu nội dung trang</button></div>
+    </div>
+
     <!-- form thêm/sửa sản phẩm -->
     <div class="panel">
       <h3 id="editTitle">Thêm sản phẩm</h3>
@@ -264,7 +320,10 @@
         <div class="field"><label>Danh mục</label><input class="input" id="fCat" placeholder="VD: Khay gỗ, Bàn trà, Kệ…" list="catList"><datalist id="catList"></datalist></div>
         <div class="field"><label>Giá <span class="opt">(tùy chọn)</span></label><input class="input" id="fPrice" placeholder="VD: 350.000₫ hoặc &quot;Liên hệ&quot;"></div>
         <div class="field"><label>Link Shopee</label><input class="input" id="fUrl" placeholder="https://shopee.vn/…"></div>
-        <div class="field full-col"><label>Mô tả</label><textarea class="textarea" id="fDesc" placeholder="Chất liệu, kích thước, đặc điểm hoàn thiện…"></textarea></div>
+        <div class="field full-col">
+          <div class="field-lab"><label>Mô tả</label><button class="aibtn" onclick="aiWriteProductDesc(this)">✨ AI viết</button></div>
+          <textarea class="textarea" id="fDesc" placeholder="Chất liệu, kích thước, đặc điểm hoàn thiện…"></textarea>
+        </div>
         <div class="field full-col">
           <label>Ảnh sản phẩm</label>
           <div class="drop" id="drop"><div class="ic">🖼</div><b>Kéo & thả ảnh vào đây</b><small>hoặc <span class="link">chọn từ máy</span> · JPG/PNG/WEBP · nhiều ảnh cùng lúc</small></div>
@@ -325,10 +384,11 @@
 const CACHE='hoangmoc_cache_v2';
 const GHKEY='hoangmoc_gh';
 const AUTHKEY='hoangmoc_admin_auth';
-const ADMIN_PASS_HASH='2b71ed83fe16e8c4a23f7a8ec7d475372f636cd0bf1eafc09f1bd8806c78c35d';
-let state={products:[],settings:{shopee:'',tiktok:'',facebook:'',maxDim:1400,quality:0.82}};
+let state={products:[],siteContent:{},settings:{shopee:'',tiktok:'',facebook:'',maxDim:1400,quality:0.82}};
 let draftImages=[];   // {data(dataURL|path), w,h,kb, cover, isNew}
+let draftHeroImage=null; // {data,w,h,kb} khi chọn ảnh hero mới, null nếu giữ nguyên
 let editingId=null, curCat='all';
+function authToken(){return sessionStorage.getItem(AUTHKEY)||'';}
 
 /* ---------- tải dữ liệu ---------- */
 async function boot(){
@@ -343,12 +403,28 @@ async function boot(){
     const raw=localStorage.getItem(CACHE);
     if(raw){state=normalize(JSON.parse(raw));} else {seed();}
   }
-  renderNav();renderGrid();applyPublicSettings();
+  renderNav();renderGrid();applyPublicSettings();applySiteContent();
   if(location.hash.replace('#','')==='admin')showAdmin();
 }
-function normalize(d){return {products:d.products||[],settings:{shopee:'',tiktok:'',facebook:'',maxDim:1400,quality:0.82,...(d.settings||{})}};}
+const DEFAULT_CONTENT={
+  eyebrow:'Xưởng mộc thủ công · Hưng Yên',
+  title:'Gỗ thật, tay nghề thật,',
+  titleEm:'làm ra vật dụng cả đời dùng.',
+  desc:'Đồ gỗ và nội thất thủ công từ xưởng Hoàng Mộc — mỗi món đều được đóng thật, hoàn thiện thật, không sơn phủ che khuyết điểm gỗ. Xem mẫu tại đây, đặt mua trọn vẹn trên Shopee với đầy đủ chính sách đổi trả và vận chuyển của sàn.',
+  note:'Giá và tình trạng hàng cập nhật trực tiếp trên gian hàng Shopee.',
+  trust1:'100% gỗ tự nhiên, không phủ che khuyết điểm',
+  trust2:'Đặt mua & thanh toán an toàn qua Shopee',
+  trust3:'Đổi trả theo chính sách Shopee',
+  heroImage:'',
+  footerIntro:'Nội thất & đồ gỗ thủ công. Mọi sản phẩm được đóng thật, hoàn thiện thật tại xưởng — không sơn phủ che khuyết điểm gỗ.',
+  workshopAddr:'Phương Tòng, Hiệp Cường,\nHưng Yên',
+  workshopHours:'Giờ làm việc: 8:00 – 18:00',
+  footerLegal:'Website chỉ giới thiệu sản phẩm — mọi giao dịch mua bán, thanh toán, vận chuyển và đổi trả được thực hiện trực tiếp trên Shopee.',
+};
+function normalize(d){return {products:d.products||[],siteContent:{...DEFAULT_CONTENT,...(d.siteContent||{})},settings:{shopee:'',tiktok:'',facebook:'',maxDim:1400,quality:0.82,...(d.settings||{})}};}
 function cacheLocal(){localStorage.setItem(CACHE,JSON.stringify(state));}
 function seed(){
+  state.siteContent={...DEFAULT_CONTENT};
   state.products=[
     {id:uid(),name:'Khay gỗ óc chó chữ nhật',cat:'Khay gỗ',price:'350.000₫',url:'',feat:true,desc:'Khay phục vụ / bày trà từ gỗ óc chó nguyên khối. Dầu lau thực phẩm. 30×20×3cm.',images:[ph('#6C7A4C')]},
     {id:uid(),name:'Bàn trà gỗ sồi mộc',cat:'Bàn trà',price:'2.900.000₫',url:'',feat:false,desc:'Bàn trà mặt liền gỗ sồi, chân tháo lắp. Hoàn thiện dầu tự nhiên giữ vân gỗ thật.',images:[ph('#7A5E44')]},
@@ -396,7 +472,7 @@ function closeModal(){document.getElementById('modalMount').innerHTML='';}
 
 /* ---------- chuyển đổi giao diện ---------- */
 function showAdmin(){
-  if(sessionStorage.getItem(AUTHKEY)==='1'){enterAdmin();return;}
+  if(authToken()){enterAdmin();return;}
   document.getElementById('site').classList.add('hidden');
   document.getElementById('admin').classList.add('hidden');
   document.getElementById('adminGate').classList.remove('hidden');
@@ -411,28 +487,152 @@ function enterAdmin(){
   window.scrollTo(0,0);renderAdmin();
   if(location.hash.replace('#','')!=='admin')history.replaceState(null,'','#admin');
 }
-async function sha256Hex(str){
-  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
-  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
-}
 async function checkAdminPass(){
   const val=document.getElementById('gatePass').value;
   if(!val)return;
-  const btn=document.getElementById('gateBtn');btn.disabled=true;
-  const hash=await sha256Hex(val);
-  btn.disabled=false;
-  if(hash===ADMIN_PASS_HASH){
-    sessionStorage.setItem(AUTHKEY,'1');
-    enterAdmin();
-  }else{
-    document.getElementById('gateErr').textContent='Sai mật khẩu, thử lại.';
-    document.getElementById('gatePass').value='';
-    document.getElementById('gatePass').focus();
+  const btn=document.getElementById('gateBtn');btn.disabled=true;btn.textContent='Đang kiểm tra…';
+  try{
+    const r=await fetch('/api/admin-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:val})});
+    const d=await r.json().catch(()=>({}));
+    if(r.ok&&d.token){
+      sessionStorage.setItem(AUTHKEY,d.token);
+      enterAdmin();
+    }else{
+      document.getElementById('gateErr').textContent=r.status===401?'Sai mật khẩu, thử lại.':(d.error||'Lỗi kết nối máy chủ, thử lại.');
+      document.getElementById('gatePass').value='';
+      document.getElementById('gatePass').focus();
+    }
+  }catch(e){
+    document.getElementById('gateErr').textContent='Lỗi mạng — kiểm tra kết nối rồi thử lại.';
+  }finally{
+    btn.disabled=false;btn.textContent='Vào khu quản trị';
   }
 }
 function adminLogout(){sessionStorage.removeItem(AUTHKEY);history.replaceState(null,'','#');showSite();toast('Đã đăng xuất khu quản trị','ok');}
-function showSite(){document.getElementById('admin').classList.add('hidden');document.getElementById('adminGate').classList.add('hidden');document.getElementById('site').classList.remove('hidden');if(location.hash.replace('#','')==='admin')history.replaceState(null,'','#');renderNav();renderGrid();applyPublicSettings();}
-function renderAdmin(){fillSettings();renderPlist();renderCatList();updateConn();}
+function showSite(){document.getElementById('admin').classList.add('hidden');document.getElementById('adminGate').classList.add('hidden');document.getElementById('site').classList.remove('hidden');if(location.hash.replace('#','')==='admin')history.replaceState(null,'','#');renderNav();renderGrid();applyPublicSettings();applySiteContent();}
+function renderAdmin(){fillSettings();fillContentForm();renderHeroThumb();renderPlist();renderCatList();updateConn();}
+function applySiteContent(){
+  const c={...DEFAULT_CONTENT,...state.siteContent};
+  document.getElementById('hcEyebrow').textContent=c.eyebrow;
+  document.getElementById('hcTitle').textContent=c.title;
+  document.getElementById('hcTitleEm').textContent=c.titleEm;
+  document.getElementById('hcDesc').textContent=c.desc;
+  document.getElementById('hcNote').textContent=c.note;
+  document.getElementById('hcTrust1').textContent=c.trust1;
+  document.getElementById('hcTrust2').textContent=c.trust2;
+  document.getElementById('hcTrust3').textContent=c.trust3;
+  document.getElementById('hcFooterIntro').textContent=c.footerIntro;
+  document.getElementById('hcWorkshopAddr').innerHTML=esc(c.workshopAddr||'').replace(/\n/g,'<br>');
+  document.getElementById('hcWorkshopHours').textContent=c.workshopHours;
+  document.getElementById('hcFooterLegal').textContent=c.footerLegal;
+  const wrap=document.getElementById('heroLayout'),photoWrap=document.getElementById('heroPhotoWrap'),img=document.getElementById('heroPhotoImg');
+  if(c.heroImage){img.src=c.heroImage;photoWrap.classList.remove('hidden');wrap.classList.add('has-photo');}
+  else{photoWrap.classList.add('hidden');wrap.classList.remove('has-photo');}
+}
+function fillContentForm(){
+  const c={...DEFAULT_CONTENT,...state.siteContent};
+  document.getElementById('cEyebrow').value=c.eyebrow;
+  document.getElementById('cTitle').value=c.title;
+  document.getElementById('cTitleEm').value=c.titleEm;
+  document.getElementById('cDesc').value=c.desc;
+  document.getElementById('cNote').value=c.note;
+  document.getElementById('cTrust1').value=c.trust1;
+  document.getElementById('cTrust2').value=c.trust2;
+  document.getElementById('cTrust3').value=c.trust3;
+  document.getElementById('cFooterIntro').value=c.footerIntro;
+  document.getElementById('cWorkshopAddr').value=c.workshopAddr;
+  document.getElementById('cWorkshopHours').value=c.workshopHours;
+  document.getElementById('cFooterLegal').value=c.footerLegal;
+}
+function saveContent(){
+  state.siteContent={
+    eyebrow:document.getElementById('cEyebrow').value.trim()||DEFAULT_CONTENT.eyebrow,
+    title:document.getElementById('cTitle').value.trim()||DEFAULT_CONTENT.title,
+    titleEm:document.getElementById('cTitleEm').value.trim()||DEFAULT_CONTENT.titleEm,
+    desc:document.getElementById('cDesc').value.trim()||DEFAULT_CONTENT.desc,
+    note:document.getElementById('cNote').value.trim()||DEFAULT_CONTENT.note,
+    trust1:document.getElementById('cTrust1').value.trim()||DEFAULT_CONTENT.trust1,
+    trust2:document.getElementById('cTrust2').value.trim()||DEFAULT_CONTENT.trust2,
+    trust3:document.getElementById('cTrust3').value.trim()||DEFAULT_CONTENT.trust3,
+    heroImage:draftHeroImage?draftHeroImage.data:(state.siteContent&&state.siteContent.heroImage)||'',
+    footerIntro:document.getElementById('cFooterIntro').value.trim()||DEFAULT_CONTENT.footerIntro,
+    workshopAddr:document.getElementById('cWorkshopAddr').value.trim()||DEFAULT_CONTENT.workshopAddr,
+    workshopHours:document.getElementById('cWorkshopHours').value.trim()||DEFAULT_CONTENT.workshopHours,
+    footerLegal:document.getElementById('cFooterLegal').value.trim()||DEFAULT_CONTENT.footerLegal,
+  };
+  cacheLocal();applySiteContent();
+  toast('Đã lưu nội dung trang (nhớ đăng lên GitHub)','ok');
+}
+function removeHeroImage(){draftHeroImage=null;state.siteContent.heroImage='';cacheLocal();renderHeroThumb();applySiteContent();}
+function renderHeroThumb(){
+  const box=document.getElementById('heroThumb');
+  const img=draftHeroImage?draftHeroImage.data:(state.siteContent&&state.siteContent.heroImage);
+  if(!img){box.innerHTML='';return;}
+  const dims=draftHeroImage?`${draftHeroImage.w}×${draftHeroImage.h}${draftHeroImage.kb?' · '+draftHeroImage.kb+'KB':''}`:'đã lưu';
+  box.innerHTML=`<div class="thumb"><img class="im" src="${esc(img)}" alt=""><button class="x" onclick="removeHeroImage()" aria-label="Xóa ảnh hero">×</button><div class="sz mono">${dims}</div></div>`;
+}
+/* ---------- AI viết nội dung (Gemini qua /api/ai-write) ---------- */
+async function callAI(kind,context){
+  const r=await fetch('/api/ai-write',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken()},
+    body:JSON.stringify({kind,context:context||{}})
+  });
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok){
+    if(r.status===401){adminLogout();throw new Error('Phiên đăng nhập hết hạn, mời đăng nhập lại.');}
+    throw new Error(d.error||('Lỗi AI ('+r.status+')'));
+  }
+  return d.text;
+}
+async function withAIButton(btn,fn){
+  const old=btn.textContent;btn.disabled=true;btn.textContent='✨ Đang viết…';
+  try{await fn();}
+  catch(e){toast(e.message||'Lỗi gọi AI','err');}
+  finally{btn.disabled=false;btn.textContent=old;}
+}
+function aiWrite(btn,kind,targetId){
+  withAIButton(btn,async()=>{
+    const text=await callAI(kind,{});
+    document.getElementById(targetId).value=text;
+    toast('AI đã viết xong — chỉnh lại nếu cần rồi bấm Lưu','ok');
+  });
+}
+function aiWriteTitle(btn){
+  withAIButton(btn,async()=>{
+    const text=await callAI('hero_title',{});
+    const j=JSON.parse(text);
+    if(!j.title||!j.emphasis)throw new Error('AI trả về sai định dạng, thử lại.');
+    document.getElementById('cTitle').value=j.title;
+    document.getElementById('cTitleEm').value=j.emphasis;
+    toast('AI đã viết xong — chỉnh lại nếu cần rồi bấm Lưu','ok');
+  });
+}
+function aiWriteTrust(btn){
+  withAIButton(btn,async()=>{
+    const text=await callAI('trust_badges',{});
+    const arr=JSON.parse(text);
+    if(!Array.isArray(arr)||arr.length<3)throw new Error('AI trả về sai định dạng, thử lại.');
+    document.getElementById('cTrust1').value=arr[0];
+    document.getElementById('cTrust2').value=arr[1];
+    document.getElementById('cTrust3').value=arr[2];
+    toast('AI đã viết xong — chỉnh lại nếu cần rồi bấm Lưu','ok');
+  });
+}
+function aiWriteProductDesc(btn){
+  withAIButton(btn,async()=>{
+    const context={
+      name:document.getElementById('fName').value.trim(),
+      cat:document.getElementById('fCat').value.trim(),
+      price:document.getElementById('fPrice').value.trim(),
+      draft:document.getElementById('fDesc').value.trim(),
+    };
+    if(!context.name)throw new Error('Nhập tên sản phẩm trước để AI viết cho đúng.');
+    const text=await callAI('product_desc',context);
+    document.getElementById('fDesc').value=text;
+    toast('AI đã viết xong — chỉnh lại nếu cần rồi Lưu vào danh sách','ok');
+  });
+}
 function renderCatList(){document.getElementById('catList').innerHTML=cats().map(c=>`<option value="${esc(c)}">`).join('');}
 function renderPlist(){
   const box=document.getElementById('plist');document.getElementById('pTotal').textContent='· '+state.products.length;
@@ -473,6 +673,12 @@ function renderThumbs(){
 }
 function removeImg(i){const wc=draftImages[i].cover;draftImages.splice(i,1);if(wc&&draftImages.length)draftImages[0].cover=true;renderThumbs();}
 function makeCover(i){const c=draftImages.splice(i,1)[0];draftImages.forEach(im=>im.cover=false);c.cover=true;draftImages.unshift(c);renderThumbs();}
+async function handleHeroFile(files){
+  const f=[...files].find(f=>f.type.startsWith('image/'));if(!f)return;
+  toast('Đang xử lý ảnh hero…');
+  try{draftHeroImage=await resizeImage(f);renderHeroThumb();toast('Đã thêm ảnh hero ✓ — nhớ bấm Lưu nội dung trang','ok');}
+  catch(e){toast('Lỗi đọc ảnh','err');}
+}
 
 /* ---------- CRUD sản phẩm (state cục bộ) ---------- */
 function saveProduct(){
@@ -561,8 +767,15 @@ async function publish(){
       }
       p.images=out;
     }
+    if(state.siteContent&&isNewImg(state.siteContent.heroImage)){
+      const b64=state.siteContent.heroImage.split(',')[1];
+      const path='images/hero-'+Date.now().toString(36)+'.jpg';
+      btnMsg('Đang tải ảnh hero…');
+      await ghPut(path,b64,'add hero image '+path,null);
+      state.siteContent.heroImage=path;draftHeroImage=null;
+    }
     btnMsg('Đang cập nhật danh mục…');
-    const publicState={products:state.products,settings:{shopee:state.settings.shopee,tiktok:state.settings.tiktok,facebook:state.settings.facebook,maxDim:state.settings.maxDim,quality:state.settings.quality}};
+    const publicState={products:state.products,siteContent:state.siteContent,settings:{shopee:state.settings.shopee,tiktok:state.settings.tiktok,facebook:state.settings.facebook,maxDim:state.settings.maxDim,quality:state.settings.quality}};
     const json=JSON.stringify(publicState,null,2);
     const existing=await ghGet('data.json');
     await ghPut('data.json',b64utf8(json),'update catalogue',existing?existing.sha:null);
@@ -590,12 +803,18 @@ function importData(input){const f=input.files[0];if(!f)return;const r=new FileR
 /* ---------- tiện ích ---------- */
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 let toastT;function toast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type&&type!=='+'?' '+type:'');clearTimeout(toastT);toastT=setTimeout(()=>t.className='toast',2600);}
-function initDrop(){const dz=document.getElementById('drop'),fi=document.getElementById('fileInput');
-  dz.addEventListener('click',()=>fi.click());fi.addEventListener('change',()=>{handleFiles(fi.files);fi.value='';});
+function wireDropzone(dzId,fiId,onFiles){
+  const dz=document.getElementById(dzId),fi=document.getElementById(fiId);
+  dz.addEventListener('click',()=>fi.click());fi.addEventListener('change',()=>{onFiles(fi.files);fi.value='';});
   ['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('drag');}));
   ['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('drag');}));
-  dz.addEventListener('drop',e=>{if(e.dataTransfer&&e.dataTransfer.files)handleFiles(e.dataTransfer.files);});
-  window.addEventListener('dragover',e=>e.preventDefault());window.addEventListener('drop',e=>e.preventDefault());}
+  dz.addEventListener('drop',e=>{if(e.dataTransfer&&e.dataTransfer.files)onFiles(e.dataTransfer.files);});
+}
+function initDrop(){
+  wireDropzone('drop','fileInput',handleFiles);
+  wireDropzone('heroDrop','heroFileInput',handleHeroFile);
+  window.addEventListener('dragover',e=>e.preventDefault());window.addEventListener('drop',e=>e.preventDefault());
+}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 boot();
 </script>
