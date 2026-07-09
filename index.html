@@ -92,8 +92,6 @@
   footer h4{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-2);margin:0 0 12px}
   footer .base{border-top:1px solid rgba(246,239,226,.14);margin-top:34px;padding-top:18px;font-size:12px;color:rgba(246,239,226,.5);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
   footer .base span{max-width:640px}
-  .footer-admin-link{background:none;border:none;color:rgba(246,239,226,.38);font-size:11px;text-decoration:underline;padding:0;flex-shrink:0}
-  .footer-admin-link:hover{color:rgba(246,239,226,.75)}
   .overlay{position:fixed;inset:0;background:rgba(42,32,22,.6);backdrop-filter:blur(3px);z-index:60;display:flex;align-items:center;justify-content:center;padding:20px}
   .modal{background:var(--paper);border-radius:18px;max-width:920px;width:100%;max-height:90vh;overflow:auto;box-shadow:0 30px 80px -20px rgba(0,0,0,.5)}
   .modal .top{display:grid;grid-template-columns:1.1fr 1fr}
@@ -179,6 +177,13 @@
   .aibtn:hover{background:rgba(180,131,43,.16)}
   .aibtn:disabled{opacity:.55;pointer-events:none}
   .field-lab{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+  .cat-add{display:flex;gap:10px;margin-bottom:18px}
+  .cat-add .input{flex:1}
+  .catlist{display:flex;flex-wrap:wrap;gap:10px}
+  .catchip{display:flex;align-items:center;gap:9px;background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:8px 8px 8px 16px;font-size:13.5px;color:var(--walnut-2)}
+  .catchip .cnt{color:var(--walnut-soft);font-size:11px}
+  .catchip .del{background:rgba(42,32,22,.08);border:none;width:22px;height:22px;border-radius:999px;color:var(--walnut-2);font-size:12px;line-height:1;display:grid;place-items:center}
+  .catchip .del:hover{background:#c0392b;color:#fff}
   .chk{display:inline-flex;align-items:center;gap:9px;font-size:13.5px;color:var(--walnut-2);cursor:pointer;user-select:none}
   .chk input{width:17px;height:17px;accent-color:var(--gold)}
   .form-actions{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
@@ -236,7 +241,6 @@
     </div>
     <div class="wrap base">
       <span>© <span id="yr"></span> Hoàng Mộc Interior. <span id="hcFooterLegal">Website chỉ giới thiệu sản phẩm — mọi giao dịch mua bán, thanh toán, vận chuyển và đổi trả được thực hiện trực tiếp trên Shopee.</span></span>
-      <button class="footer-admin-link" onclick="showAdmin()">Quản trị</button>
     </div>
   </footer>
 </div>
@@ -317,7 +321,7 @@
       <p class="lead">Điền thông tin, kéo–thả ảnh vào ô bên dưới. Ảnh tự động thu nhỏ & nén. Sửa xong nhớ bấm <b>Đăng lên GitHub</b> để cập nhật lên trang thật.</p>
       <div class="form-grid">
         <div class="field"><label>Tên sản phẩm</label><input class="input" id="fName" placeholder="VD: Khay gỗ óc chó chữ nhật"></div>
-        <div class="field"><label>Danh mục</label><input class="input" id="fCat" placeholder="VD: Khay gỗ, Bàn trà, Kệ…" list="catList"><datalist id="catList"></datalist></div>
+        <div class="field"><label>Danh mục</label><select class="input" id="fCat"></select></div>
         <div class="field"><label>Giá <span class="opt">(tùy chọn)</span></label><input class="input" id="fPrice" placeholder="VD: 350.000₫ hoặc &quot;Liên hệ&quot;"></div>
         <div class="field"><label>Link Shopee</label><input class="input" id="fUrl" placeholder="https://shopee.vn/…"></div>
         <div class="field full-col">
@@ -333,6 +337,17 @@
         <div class="field full-col"><label class="chk"><input type="checkbox" id="fFeat"> Đánh dấu "Nổi bật"</label></div>
       </div>
       <div class="form-actions"><button class="abtn primary" onclick="saveProduct()">Lưu vào danh sách</button><button class="abtn" onclick="resetForm()">Làm mới form</button></div>
+    </div>
+
+    <!-- quản lý danh mục -->
+    <div class="panel">
+      <h3>Quản lý danh mục</h3>
+      <p class="lead">Thêm danh mục trước, sau đó chọn khi tạo/sửa sản phẩm. Xóa danh mục đang có sản phẩm sẽ chuyển các sản phẩm đó về "chưa phân loại", không xóa sản phẩm.</p>
+      <div class="cat-add">
+        <input class="input" id="newCatName" placeholder="Tên danh mục mới, VD: Đèn trang trí">
+        <button class="abtn primary" onclick="addCategory()">+ Thêm danh mục</button>
+      </div>
+      <div class="catlist" id="catManageList"></div>
     </div>
 
     <!-- danh sách -->
@@ -384,7 +399,7 @@
 const CACHE='hoangmoc_cache_v2';
 const GHKEY='hoangmoc_gh';
 const AUTHKEY='hoangmoc_admin_auth';
-let state={products:[],siteContent:{},settings:{shopee:'',tiktok:'',facebook:'',maxDim:1400,quality:0.82}};
+let state={products:[],categories:[],siteContent:{},settings:{shopee:'',tiktok:'',facebook:'',maxDim:1400,quality:0.82}};
 let draftImages=[];   // {data(dataURL|path), w,h,kb, cover, isNew}
 let draftHeroImage=null; // {data,w,h,kb} khi chọn ảnh hero mới, null nếu giữ nguyên
 let editingId=null, curCat='all';
@@ -421,7 +436,12 @@ const DEFAULT_CONTENT={
   workshopHours:'Giờ làm việc: 8:00 – 18:00',
   footerLegal:'Website chỉ giới thiệu sản phẩm — mọi giao dịch mua bán, thanh toán, vận chuyển và đổi trả được thực hiện trực tiếp trên Shopee.',
 };
-function normalize(d){return {products:d.products||[],siteContent:{...DEFAULT_CONTENT,...(d.siteContent||{})},settings:{shopee:'',tiktok:'',facebook:'',maxDim:1400,quality:0.82,...(d.settings||{})}};}
+function normalize(d){
+  const products=d.products||[];
+  const fromProducts=[...new Set(products.map(p=>p.cat).filter(Boolean))];
+  const categories=[...new Set([...(d.categories||[]),...fromProducts])];
+  return {products,categories,siteContent:{...DEFAULT_CONTENT,...(d.siteContent||{})},settings:{shopee:'',tiktok:'',facebook:'',maxDim:1400,quality:0.82,...(d.settings||{})}};
+}
 function cacheLocal(){localStorage.setItem(CACHE,JSON.stringify(state));}
 function seed(){
   state.siteContent={...DEFAULT_CONTENT};
@@ -429,14 +449,16 @@ function seed(){
     {id:uid(),name:'Khay gỗ óc chó chữ nhật',cat:'Khay gỗ',price:'350.000₫',url:'',feat:true,desc:'Khay phục vụ / bày trà từ gỗ óc chó nguyên khối. Dầu lau thực phẩm. 30×20×3cm.',images:[ph('#6C7A4C')]},
     {id:uid(),name:'Bàn trà gỗ sồi mộc',cat:'Bàn trà',price:'2.900.000₫',url:'',feat:false,desc:'Bàn trà mặt liền gỗ sồi, chân tháo lắp. Hoàn thiện dầu tự nhiên giữ vân gỗ thật.',images:[ph('#7A5E44')]},
     {id:uid(),name:'Kệ treo tường 3 tầng',cat:'Kệ',price:'',url:'',feat:false,desc:'Kệ trang trí gắn tường, gỗ ghép thanh. Tùy chỉnh kích thước theo không gian.',images:[ph('#B4832B')]}
-  ];cacheLocal();
+  ];
+  state.categories=['Khay gỗ','Bàn trà','Kệ'];
+  cacheLocal();
 }
 function uid(){return 'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 function ph(c){const s=`<svg xmlns='http://www.w3.org/2000/svg' width='400' height='300'><rect width='400' height='300' fill='${c}'/><rect width='400' height='300' fill='#000' opacity='0.06'/><text x='50%' y='52%' font-family='serif' font-size='34' fill='#FBF6EC' text-anchor='middle' opacity='.85'>Hoàng Mộc</text></svg>`;return 'data:image/svg+xml;utf8,'+s.replace(/#/g,'%23').replace(/</g,'%3C').replace(/>/g,'%3E');}
 function isNewImg(s){return typeof s==='string'&&s.startsWith('data:image/jpeg');}
 
 /* ---------- hiển thị trang công khai ---------- */
-function cats(){const s=new Set();state.products.forEach(p=>p.cat&&s.add(p.cat));return [...s];}
+function cats(){return state.categories||[];}
 function setCat(c){curCat=c;renderNav();renderGrid();document.getElementById('catalogue').scrollIntoView({behavior:'smooth'});}
 function renderNav(){const nav=document.getElementById('navCats');const list=['all',...cats()];
   nav.innerHTML=list.map(c=>`<button class="${c===curCat?'on':''}" onclick="setCat('${c.replace(/'/g,"\\'")}')">${c==='all'?'Tất cả':esc(c)}</button>`).join('');}
@@ -510,7 +532,7 @@ async function checkAdminPass(){
 }
 function adminLogout(){sessionStorage.removeItem(AUTHKEY);history.replaceState(null,'','#');showSite();toast('Đã đăng xuất khu quản trị','ok');}
 function showSite(){document.getElementById('admin').classList.add('hidden');document.getElementById('adminGate').classList.add('hidden');document.getElementById('site').classList.remove('hidden');if(location.hash.replace('#','')==='admin')history.replaceState(null,'','#');renderNav();renderGrid();applyPublicSettings();applySiteContent();}
-function renderAdmin(){fillSettings();fillContentForm();renderHeroThumb();renderPlist();renderCatList();updateConn();}
+function renderAdmin(){fillSettings();fillContentForm();renderHeroThumb();renderCatList();renderCategoryPanel();renderPlist();updateConn();}
 function applySiteContent(){
   const c={...DEFAULT_CONTENT,...state.siteContent};
   document.getElementById('hcEyebrow').textContent=c.eyebrow;
@@ -633,7 +655,39 @@ function aiWriteProductDesc(btn){
     toast('AI đã viết xong — chỉnh lại nếu cần rồi Lưu vào danh sách','ok');
   });
 }
-function renderCatList(){document.getElementById('catList').innerHTML=cats().map(c=>`<option value="${esc(c)}">`).join('');}
+function renderCatList(){
+  const sel=document.getElementById('fCat');const cur=sel.value;
+  sel.innerHTML='<option value="">— Không chọn danh mục —</option>'+cats().map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  sel.value=cur;
+}
+function renderCategoryPanel(){
+  const box=document.getElementById('catManageList');
+  const list=cats();
+  if(!list.length){box.innerHTML=`<p style="color:var(--walnut-soft);font-size:13.5px">Chưa có danh mục nào — thêm danh mục đầu tiên ở trên.</p>`;return;}
+  box.innerHTML=list.map(c=>{
+    const n=state.products.filter(p=>p.cat===c).length;
+    return `<span class="catchip">${esc(c)}<span class="cnt mono">${n} sp</span><button class="del" onclick="removeCategory('${c.replace(/'/g,"\\'")}')" aria-label="Xóa danh mục ${esc(c)}">×</button></span>`;
+  }).join('');
+}
+function addCategory(){
+  const input=document.getElementById('newCatName');
+  const name=input.value.trim();
+  if(!name){toast('Nhập tên danh mục','err');return;}
+  if(state.categories.some(c=>c.toLowerCase()===name.toLowerCase())){toast('Danh mục này đã tồn tại','err');return;}
+  state.categories.push(name);
+  cacheLocal();input.value='';renderCategoryPanel();renderCatList();
+  toast('Đã thêm danh mục (nhớ đăng lên GitHub)','ok');
+}
+function removeCategory(name){
+  const n=state.products.filter(p=>p.cat===name).length;
+  const msg=n>0?`Danh mục "${name}" đang có ${n} sản phẩm. Xóa sẽ chuyển các sản phẩm này về "chưa phân loại" (không xóa sản phẩm). Tiếp tục?`:`Xóa danh mục "${name}"?`;
+  if(!confirm(msg))return;
+  state.products.forEach(p=>{if(p.cat===name)p.cat='';});
+  state.categories=state.categories.filter(c=>c!==name);
+  if(curCat===name)curCat='all';
+  cacheLocal();renderCategoryPanel();renderCatList();renderPlist();
+  toast('Đã xóa danh mục (nhớ đăng lên GitHub)','ok');
+}
 function renderPlist(){
   const box=document.getElementById('plist');document.getElementById('pTotal').textContent='· '+state.products.length;
   if(!state.products.length){box.innerHTML=`<p style="color:var(--walnut-soft);font-size:14px">Chưa có sản phẩm nào.</p>`;return;}
@@ -775,7 +829,7 @@ async function publish(){
       state.siteContent.heroImage=path;draftHeroImage=null;
     }
     btnMsg('Đang cập nhật danh mục…');
-    const publicState={products:state.products,siteContent:state.siteContent,settings:{shopee:state.settings.shopee,tiktok:state.settings.tiktok,facebook:state.settings.facebook,maxDim:state.settings.maxDim,quality:state.settings.quality}};
+    const publicState={products:state.products,categories:state.categories,siteContent:state.siteContent,settings:{shopee:state.settings.shopee,tiktok:state.settings.tiktok,facebook:state.settings.facebook,maxDim:state.settings.maxDim,quality:state.settings.quality}};
     const json=JSON.stringify(publicState,null,2);
     const existing=await ghGet('data.json');
     await ghPut('data.json',b64utf8(json),'update catalogue',existing?existing.sha:null);
@@ -816,6 +870,7 @@ function initDrop(){
   window.addEventListener('dragover',e=>e.preventDefault());window.addEventListener('drop',e=>e.preventDefault());
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+window.addEventListener('hashchange',()=>{if(location.hash.replace('#','')==='admin')showAdmin();});
 boot();
 </script>
 </body>
