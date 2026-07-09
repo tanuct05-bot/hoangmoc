@@ -26,6 +26,20 @@
       ]
     }
   ],
+  "categories": [
+    {
+      "name": "Khay gỗ",
+      "parent": null
+    },
+    {
+      "name": "Bàn trà",
+      "parent": null
+    },
+    {
+      "name": "Bàn ghế phòng trà",
+      "parent": null
+    }
+  ],
   "siteContent": {
     "eyebrow": "Xưởng mộc thủ công · Hưng Yên",
     "title": "Đồ gỗ thủ công Hoàng Mộc",
