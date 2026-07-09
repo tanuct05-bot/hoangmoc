@@ -24,18 +24,6 @@
       "images": [
         "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect width='400' height='300' fill='%237A5E44'/%3E%3Crect width='400' height='300' fill='%23000' opacity='0.06'/%3E%3Ctext x='50%' y='52%' font-family='serif' font-size='34' fill='%23FBF6EC' text-anchor='middle' opacity='.85'%3EHoàng Mộc%3C/text%3E%3C/svg%3E"
       ]
-    },
-    {
-      "id": "pmrd7ycohoi80",
-      "name": "Kệ treo tường 3 tầng",
-      "cat": "Kệ",
-      "price": "",
-      "url": "",
-      "feat": false,
-      "desc": "Kệ trang trí gắn tường, gỗ ghép thanh. Tùy chỉnh kích thước theo không gian.",
-      "images": [
-        "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect width='400' height='300' fill='%23B4832B'/%3E%3Crect width='400' height='300' fill='%23000' opacity='0.06'/%3E%3Ctext x='50%' y='52%' font-family='serif' font-size='34' fill='%23FBF6EC' text-anchor='middle' opacity='.85'%3EHoàng Mộc%3C/text%3E%3C/svg%3E"
-      ]
     }
   ],
   "siteContent": {
