@@ -104,6 +104,16 @@
   .modal .info .price{font-size:20px;font-weight:500;color:var(--walnut);margin-bottom:18px}
   .modal .info .full{font-size:14.5px;color:var(--walnut-2);white-space:pre-wrap;margin-bottom:24px}
   .modal .close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.9);border:1px solid var(--line);width:38px;height:38px;border-radius:999px;font-size:18px;color:var(--walnut)}
+  /* cổng mật khẩu */
+  #adminGate{position:fixed;inset:0;z-index:80;background:var(--cream);display:flex;align-items:center;justify-content:center;padding:20px}
+  .gate{width:100%;max-width:360px;background:var(--paper);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:34px 30px;text-align:center}
+  .gate-mark{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:28px;color:var(--walnut)}
+  .gate p{font-size:13.5px;color:var(--walnut-soft);margin:8px 0 20px}
+  .gate .input{margin-bottom:10px;text-align:center}
+  .gate-err{min-height:18px;font-size:12.5px;color:#a33;margin-bottom:8px}
+  .gate .abtn.primary{width:100%;justify-content:center;padding:12px}
+  .gate-back{display:block;margin-top:16px;font-size:12.5px;color:var(--walnut-soft);text-decoration:underline}
+  .gate-back:hover{color:var(--gold)}
   /* admin */
   .admin{min-height:100vh;background:var(--cream)}
   .admin-top{background:var(--walnut);color:var(--cream);position:sticky;top:0;z-index:30}
@@ -218,6 +228,18 @@
   </footer>
 </div>
 
+<!-- ============ CỔNG MẬT KHẨU ============ -->
+<div id="adminGate" class="hidden">
+  <div class="gate">
+    <div class="gate-mark">Hoàng Mộc</div>
+    <p>Nhập mật khẩu để vào khu quản trị.</p>
+    <input class="input" type="password" id="gatePass" placeholder="Mật khẩu quản trị" autocomplete="current-password">
+    <div class="gate-err" id="gateErr"></div>
+    <button class="abtn primary" id="gateBtn" onclick="checkAdminPass()">Vào khu quản trị</button>
+    <a class="gate-back" href="#" onclick="event.preventDefault();location.hash='';showSite()">← Về trang chủ</a>
+  </div>
+</div>
+
 <!-- ============ QUẢN TRỊ ============ -->
 <div id="admin" class="admin hidden">
   <div class="admin-top"><div class="wrap bar">
@@ -227,6 +249,7 @@
       <button class="abtn primary" onclick="publish()">⬆ Đăng lên GitHub</button>
       <button class="abtn" onclick="reloadFromGit()">↻ Tải lại</button>
       <button class="abtn" onclick="showSite()">← Xem trang</button>
+      <button class="abtn" onclick="adminLogout()">⎋ Đăng xuất</button>
       <button class="abtn" onclick="exportData()">⬇ Sao lưu</button>
     </div>
   </div></div>
@@ -301,6 +324,8 @@
 "use strict";
 const CACHE='hoangmoc_cache_v2';
 const GHKEY='hoangmoc_gh';
+const AUTHKEY='hoangmoc_admin_auth';
+const ADMIN_PASS_HASH='2b71ed83fe16e8c4a23f7a8ec7d475372f636cd0bf1eafc09f1bd8806c78c35d';
 let state={products:[],settings:{shopee:'',tiktok:'',facebook:'',maxDim:1400,quality:0.82}};
 let draftImages=[];   // {data(dataURL|path), w,h,kb, cover, isNew}
 let editingId=null, curCat='all';
@@ -309,6 +334,7 @@ let editingId=null, curCat='all';
 async function boot(){
   document.getElementById('yr').textContent=new Date().getFullYear();
   loadGHform();updateConn();initDrop();
+  document.getElementById('gatePass').addEventListener('keydown',e=>{if(e.key==='Enter')checkAdminPass();});
   try{
     const r=await fetch('./data.json?t='+Date.now());
     if(r.ok){state=normalize(await r.json());localStorage.setItem(CACHE,JSON.stringify(state));}
@@ -318,6 +344,7 @@ async function boot(){
     if(raw){state=normalize(JSON.parse(raw));} else {seed();}
   }
   renderNav();renderGrid();applyPublicSettings();
+  if(location.hash.replace('#','')==='admin')showAdmin();
 }
 function normalize(d){return {products:d.products||[],settings:{shopee:'',tiktok:'',facebook:'',maxDim:1400,quality:0.82,...(d.settings||{})}};}
 function cacheLocal(){localStorage.setItem(CACHE,JSON.stringify(state));}
@@ -368,8 +395,43 @@ function swapMain(el,src){document.getElementById('mMain').src=src;el.parentElem
 function closeModal(){document.getElementById('modalMount').innerHTML='';}
 
 /* ---------- chuyển đổi giao diện ---------- */
-function showAdmin(){document.getElementById('site').classList.add('hidden');document.getElementById('admin').classList.remove('hidden');window.scrollTo(0,0);renderAdmin();}
-function showSite(){document.getElementById('admin').classList.add('hidden');document.getElementById('site').classList.remove('hidden');renderNav();renderGrid();applyPublicSettings();}
+function showAdmin(){
+  if(sessionStorage.getItem(AUTHKEY)==='1'){enterAdmin();return;}
+  document.getElementById('site').classList.add('hidden');
+  document.getElementById('admin').classList.add('hidden');
+  document.getElementById('adminGate').classList.remove('hidden');
+  document.getElementById('gateErr').textContent='';
+  document.getElementById('gatePass').value='';
+  document.getElementById('gatePass').focus();
+}
+function enterAdmin(){
+  document.getElementById('site').classList.add('hidden');
+  document.getElementById('adminGate').classList.add('hidden');
+  document.getElementById('admin').classList.remove('hidden');
+  window.scrollTo(0,0);renderAdmin();
+  if(location.hash.replace('#','')!=='admin')history.replaceState(null,'','#admin');
+}
+async function sha256Hex(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function checkAdminPass(){
+  const val=document.getElementById('gatePass').value;
+  if(!val)return;
+  const btn=document.getElementById('gateBtn');btn.disabled=true;
+  const hash=await sha256Hex(val);
+  btn.disabled=false;
+  if(hash===ADMIN_PASS_HASH){
+    sessionStorage.setItem(AUTHKEY,'1');
+    enterAdmin();
+  }else{
+    document.getElementById('gateErr').textContent='Sai mật khẩu, thử lại.';
+    document.getElementById('gatePass').value='';
+    document.getElementById('gatePass').focus();
+  }
+}
+function adminLogout(){sessionStorage.removeItem(AUTHKEY);history.replaceState(null,'','#');showSite();toast('Đã đăng xuất khu quản trị','ok');}
+function showSite(){document.getElementById('admin').classList.add('hidden');document.getElementById('adminGate').classList.add('hidden');document.getElementById('site').classList.remove('hidden');if(location.hash.replace('#','')==='admin')history.replaceState(null,'','#');renderNav();renderGrid();applyPublicSettings();}
 function renderAdmin(){fillSettings();renderPlist();renderCatList();updateConn();}
 function renderCatList(){document.getElementById('catList').innerHTML=cats().map(c=>`<option value="${esc(c)}">`).join('');}
 function renderPlist(){
