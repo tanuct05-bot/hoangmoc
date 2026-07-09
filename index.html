@@ -177,13 +177,15 @@
   .aibtn:hover{background:rgba(180,131,43,.16)}
   .aibtn:disabled{opacity:.55;pointer-events:none}
   .field-lab{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
-  .cat-add{display:flex;gap:10px;margin-bottom:18px}
-  .cat-add .input{flex:1}
-  .catlist{display:flex;flex-wrap:wrap;gap:10px}
-  .catchip{display:flex;align-items:center;gap:9px;background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:8px 8px 8px 16px;font-size:13.5px;color:var(--walnut-2)}
-  .catchip .cnt{color:var(--walnut-soft);font-size:11px}
-  .catchip .del{background:rgba(42,32,22,.08);border:none;width:22px;height:22px;border-radius:999px;color:var(--walnut-2);font-size:12px;line-height:1;display:grid;place-items:center}
-  .catchip .del:hover{background:#c0392b;color:#fff}
+  .cat-add{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+  .cat-add .input{flex:1;min-width:180px}
+  .cat-add select.input{flex:0 0 220px}
+  .catlist{display:flex;flex-direction:column}
+  .catrow{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--line)}
+  .catrow:last-child{border-bottom:none}
+  .catrow .cname{flex:1;font-size:14px;color:var(--walnut-2);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .catrow .cnt{color:var(--walnut-soft);font-size:11.5px;margin-left:8px}
+  .catrow .cact{display:flex;gap:8px;flex-shrink:0}
   .chk{display:inline-flex;align-items:center;gap:9px;font-size:13.5px;color:var(--walnut-2);cursor:pointer;user-select:none}
   .chk input{width:17px;height:17px;accent-color:var(--gold)}
   .form-actions{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
@@ -342,9 +344,10 @@
     <!-- quản lý danh mục -->
     <div class="panel">
       <h3>Quản lý danh mục</h3>
-      <p class="lead">Thêm danh mục trước, sau đó chọn khi tạo/sửa sản phẩm. Xóa danh mục đang có sản phẩm sẽ chuyển các sản phẩm đó về "chưa phân loại", không xóa sản phẩm.</p>
+      <p class="lead">Thêm danh mục trước, sau đó chọn khi tạo/sửa sản phẩm. Có thể chọn "danh mục cha" để tạo danh mục con. Đổi tên tự động cập nhật sản phẩm & danh mục con liên quan. Xóa danh mục đang có sản phẩm sẽ chuyển các sản phẩm đó về "chưa phân loại" (không xóa sản phẩm); danh mục con của nó được đưa lên danh mục gốc (không bị xóa).</p>
       <div class="cat-add">
         <input class="input" id="newCatName" placeholder="Tên danh mục mới, VD: Đèn trang trí">
+        <select class="input" id="newCatParent"></select>
         <button class="abtn primary" onclick="addCategory()">+ Thêm danh mục</button>
       </div>
       <div class="catlist" id="catManageList"></div>
@@ -438,8 +441,12 @@ const DEFAULT_CONTENT={
 };
 function normalize(d){
   const products=d.products||[];
-  const fromProducts=[...new Set(products.map(p=>p.cat).filter(Boolean))];
-  const categories=[...new Set([...(d.categories||[]),...fromProducts])];
+  const rawCats=d.categories||[];
+  const categories=rawCats.map(c=>typeof c==='string'?{name:c,parent:null}:{name:c.name,parent:c.parent||null});
+  const existing=new Set(categories.map(c=>c.name));
+  [...new Set(products.map(p=>p.cat).filter(Boolean))].forEach(name=>{
+    if(!existing.has(name)){categories.push({name,parent:null});existing.add(name);}
+  });
   return {products,categories,siteContent:{...DEFAULT_CONTENT,...(d.siteContent||{})},settings:{shopee:'',tiktok:'',facebook:'',maxDim:1400,quality:0.82,...(d.settings||{})}};
 }
 function cacheLocal(){localStorage.setItem(CACHE,JSON.stringify(state));}
@@ -450,7 +457,7 @@ function seed(){
     {id:uid(),name:'Bàn trà gỗ sồi mộc',cat:'Bàn trà',price:'2.900.000₫',url:'',feat:false,desc:'Bàn trà mặt liền gỗ sồi, chân tháo lắp. Hoàn thiện dầu tự nhiên giữ vân gỗ thật.',images:[ph('#7A5E44')]},
     {id:uid(),name:'Kệ treo tường 3 tầng',cat:'Kệ',price:'',url:'',feat:false,desc:'Kệ trang trí gắn tường, gỗ ghép thanh. Tùy chỉnh kích thước theo không gian.',images:[ph('#B4832B')]}
   ];
-  state.categories=['Khay gỗ','Bàn trà','Kệ'];
+  state.categories=[{name:'Khay gỗ',parent:null},{name:'Bàn trà',parent:null},{name:'Kệ',parent:null}];
   cacheLocal();
 }
 function uid(){return 'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
@@ -458,7 +465,16 @@ function ph(c){const s=`<svg xmlns='http://www.w3.org/2000/svg' width='400' heig
 function isNewImg(s){return typeof s==='string'&&s.startsWith('data:image/jpeg');}
 
 /* ---------- hiển thị trang công khai ---------- */
-function cats(){return state.categories||[];}
+function cats(){return (state.categories||[]).map(c=>c.name);}
+function catFlatten(){
+  const out=[];
+  const walk=(parent,depth)=>{
+    if(depth>6)return;
+    (state.categories||[]).filter(c=>(c.parent||null)===parent).forEach(c=>{out.push({name:c.name,depth});walk(c.name,depth+1);});
+  };
+  walk(null,0);
+  return out;
+}
 function setCat(c){curCat=c;renderNav();renderGrid();document.getElementById('catalogue').scrollIntoView({behavior:'smooth'});}
 function renderNav(){const nav=document.getElementById('navCats');const list=['all',...cats()];
   nav.innerHTML=list.map(c=>`<button class="${c===curCat?'on':''}" onclick="setCat('${c.replace(/'/g,"\\'")}')">${c==='all'?'Tất cả':esc(c)}</button>`).join('');}
@@ -532,7 +548,7 @@ async function checkAdminPass(){
 }
 function adminLogout(){sessionStorage.removeItem(AUTHKEY);history.replaceState(null,'','#');showSite();toast('Đã đăng xuất khu quản trị','ok');}
 function showSite(){document.getElementById('admin').classList.add('hidden');document.getElementById('adminGate').classList.add('hidden');document.getElementById('site').classList.remove('hidden');if(location.hash.replace('#','')==='admin')history.replaceState(null,'','#');renderNav();renderGrid();applyPublicSettings();applySiteContent();}
-function renderAdmin(){fillSettings();fillContentForm();renderHeroThumb();renderCatList();renderCategoryPanel();renderPlist();updateConn();}
+function renderAdmin(){fillSettings();fillContentForm();renderHeroThumb();renderCatList();renderCatParentSelect();renderCategoryPanel();renderPlist();updateConn();}
 function applySiteContent(){
   const c={...DEFAULT_CONTENT,...state.siteContent};
   document.getElementById('hcEyebrow').textContent=c.eyebrow;
@@ -655,37 +671,67 @@ function aiWriteProductDesc(btn){
     toast('AI đã viết xong — chỉnh lại nếu cần rồi Lưu vào danh sách','ok');
   });
 }
+function catIndent(depth){return '  '.repeat(depth)+(depth?'↳ ':'');}
 function renderCatList(){
   const sel=document.getElementById('fCat');const cur=sel.value;
-  sel.innerHTML='<option value="">— Không chọn danh mục —</option>'+cats().map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  sel.innerHTML='<option value="">— Không chọn danh mục —</option>'+catFlatten().map(c=>`<option value="${esc(c.name)}">${catIndent(c.depth)}${esc(c.name)}</option>`).join('');
   sel.value=cur;
+}
+function renderCatParentSelect(){
+  const sel=document.getElementById('newCatParent');
+  sel.innerHTML='<option value="">— Không có (danh mục gốc) —</option>'+catFlatten().map(c=>`<option value="${esc(c.name)}">${catIndent(c.depth)}${esc(c.name)}</option>`).join('');
 }
 function renderCategoryPanel(){
   const box=document.getElementById('catManageList');
-  const list=cats();
+  const list=catFlatten();
   if(!list.length){box.innerHTML=`<p style="color:var(--walnut-soft);font-size:13.5px">Chưa có danh mục nào — thêm danh mục đầu tiên ở trên.</p>`;return;}
   box.innerHTML=list.map(c=>{
-    const n=state.products.filter(p=>p.cat===c).length;
-    return `<span class="catchip">${esc(c)}<span class="cnt mono">${n} sp</span><button class="del" onclick="removeCategory('${c.replace(/'/g,"\\'")}')" aria-label="Xóa danh mục ${esc(c)}">×</button></span>`;
+    const n=state.products.filter(p=>p.cat===c.name).length;
+    const js=c.name.replace(/'/g,"\\'");
+    return `<div class="catrow"><span class="cname">${catIndent(c.depth)}${esc(c.name)}<span class="cnt mono">${n} sp</span></span>
+      <span class="cact">
+        <button class="minibtn" onclick="renameCategory('${js}')">Đổi tên</button>
+        <button class="minibtn del" onclick="removeCategory('${js}')">Xóa</button>
+      </span></div>`;
   }).join('');
 }
 function addCategory(){
   const input=document.getElementById('newCatName');
+  const parentSel=document.getElementById('newCatParent');
   const name=input.value.trim();
+  const parent=parentSel.value||null;
   if(!name){toast('Nhập tên danh mục','err');return;}
-  if(state.categories.some(c=>c.toLowerCase()===name.toLowerCase())){toast('Danh mục này đã tồn tại','err');return;}
-  state.categories.push(name);
-  cacheLocal();input.value='';renderCategoryPanel();renderCatList();
-  toast('Đã thêm danh mục (nhớ đăng lên GitHub)','ok');
+  if(state.categories.some(c=>c.name.toLowerCase()===name.toLowerCase())){toast('Danh mục này đã tồn tại','err');return;}
+  state.categories.push({name,parent});
+  cacheLocal();input.value='';parentSel.value='';renderCategoryPanel();renderCatList();renderCatParentSelect();
+  toast(parent?'Đã thêm danh mục con (nhớ đăng lên GitHub)':'Đã thêm danh mục (nhớ đăng lên GitHub)','ok');
+}
+function renameCategory(oldName){
+  const input=prompt('Đổi tên danh mục:',oldName);
+  if(input===null)return;
+  const newName=input.trim();
+  if(!newName){toast('Tên danh mục không được để trống','err');return;}
+  if(newName!==oldName&&state.categories.some(c=>c.name.toLowerCase()===newName.toLowerCase())){toast('Đã có danh mục trùng tên','err');return;}
+  state.categories.forEach(c=>{
+    if(c.name===oldName)c.name=newName;
+    if(c.parent===oldName)c.parent=newName;
+  });
+  state.products.forEach(p=>{if(p.cat===oldName)p.cat=newName;});
+  if(curCat===oldName)curCat=newName;
+  cacheLocal();renderCategoryPanel();renderCatList();renderCatParentSelect();renderPlist();
+  toast('Đã đổi tên danh mục (nhớ đăng lên GitHub)','ok');
 }
 function removeCategory(name){
   const n=state.products.filter(p=>p.cat===name).length;
-  const msg=n>0?`Danh mục "${name}" đang có ${n} sản phẩm. Xóa sẽ chuyển các sản phẩm này về "chưa phân loại" (không xóa sản phẩm). Tiếp tục?`:`Xóa danh mục "${name}"?`;
-  if(!confirm(msg))return;
+  const children=state.categories.filter(c=>c.parent===name);
+  let msg=n>0?`Danh mục "${name}" đang có ${n} sản phẩm. Xóa sẽ chuyển các sản phẩm này về "chưa phân loại" (không xóa sản phẩm).`:`Xóa danh mục "${name}"?`;
+  if(children.length>0)msg+=` ${children.length} danh mục con của nó sẽ được đưa lên danh mục gốc (không bị xóa).`;
+  if(!confirm(msg+' Tiếp tục?'))return;
   state.products.forEach(p=>{if(p.cat===name)p.cat='';});
-  state.categories=state.categories.filter(c=>c!==name);
+  state.categories.forEach(c=>{if(c.parent===name)c.parent=null;});
+  state.categories=state.categories.filter(c=>c.name!==name);
   if(curCat===name)curCat='all';
-  cacheLocal();renderCategoryPanel();renderCatList();renderPlist();
+  cacheLocal();renderCategoryPanel();renderCatList();renderCatParentSelect();renderPlist();
   toast('Đã xóa danh mục (nhớ đăng lên GitHub)','ok');
 }
 function renderPlist(){
